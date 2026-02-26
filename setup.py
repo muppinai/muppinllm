@@ -8,15 +8,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="muppinllm",
-    version="1.0.0",
+    version="1.0.1",
     author="Muppin Team",
     author_email="team@muppin.fun",
     description="AI-Powered Crypto Market Analyst for Solana Tokens - Bullish or Bearish Analysis",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/muppin/muppinllm",
+    url="https://github.com/muppinai/muppinllm",
     project_urls={
-        "Bug Tracker": "https://github.com/muppin/muppinllm/issues",
+        "Bug Tracker": "https://github.com/muppinai/muppinllm/issues",
         "Documentation": "https://muppin.fun",
     },
     packages=find_packages(),
@@ -36,7 +36,7 @@ setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "emergentintegrations>=0.1.0",
+        "openai>=1.0.0",
         "requests>=2.31.0",
         "pandas>=2.0.0",
         "numpy>=1.24.0",
@@ -56,5 +56,5 @@ setup(
             "muppinllm=muppinllm.cli:main",
         ],
     },
-    keywords="crypto solana ai llm market-analysis trading bullish bearish dex defi",
+    keywords="crypto solana ai llm openai market-analysis trading bullish bearish dex defi",
 )

@@ -15,12 +15,12 @@ from muppinllm import MuppinAnalyst
 
 
 async def main():
-    # Initialize the analyst with your API key
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    # Initialize the analyst with your OpenAI API key
+    api_key = os.environ.get("OPENAI_API_KEY")
     
     if not api_key:
-        print("Error: Please set EMERGENT_LLM_KEY environment variable")
-        print("Example: export EMERGENT_LLM_KEY=your-api-key")
+        print("Error: Please set OPENAI_API_KEY environment variable")
+        print("Example: export OPENAI_API_KEY=sk-your-api-key")
         return
     
     async with MuppinAnalyst(api_key=api_key) as analyst:

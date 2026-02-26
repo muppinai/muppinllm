@@ -27,7 +27,7 @@ Examples:
   muppinllm market
 
 Environment Variables:
-  EMERGENT_LLM_KEY    Your Emergent LLM API key
+  OPENAI_API_KEY      Your OpenAI API key
   COINGECKO_API_KEY   Optional CoinGecko Pro API key
 
 For more info: https://muppin.fun
@@ -54,7 +54,12 @@ For more info: https://muppin.fun
     )
     analyze_parser.add_argument(
         "--api-key",
-        help="Emergent LLM API key (or set EMERGENT_LLM_KEY)"
+        help="OpenAI API key (or set OPENAI_API_KEY)"
+    )
+    analyze_parser.add_argument(
+        "--model",
+        default="gpt-4o",
+        help="OpenAI model to use (default: gpt-4o)"
     )
     
     # Market command
@@ -86,15 +91,16 @@ async def run_command(args):
     """Run the appropriate command."""
     from .analyst import MuppinAnalyst
     
-    api_key = getattr(args, "api_key", None) or os.environ.get("EMERGENT_LLM_KEY")
+    api_key = getattr(args, "api_key", None) or os.environ.get("OPENAI_API_KEY")
+    model = getattr(args, "model", "gpt-4o")
     
     if args.command == "analyze":
-        if not api_key:
-            print("Error: EMERGENT_LLM_KEY not set. Set environment variable or use --api-key")
-            sys.exit(1)
+        if not api_key and not args.no_ai:
+            print("Warning: OPENAI_API_KEY not set. Using --no-ai mode.")
+            args.no_ai = True
         
-        async with MuppinAnalyst(api_key=api_key) as analyst:
-            try:
+        try:
+            async with MuppinAnalyst(api_key=api_key or "dummy", model=model) as analyst:
                 result = await analyst.analyze(
                     args.contract_address,
                     include_ai_analysis=not args.no_ai
@@ -104,7 +110,8 @@ async def run_command(args):
                     print(json.dumps(result.to_dict(), indent=2))
                 else:
                     print(result)
-                    print(f"\n{result.ai_summary}")
+                    if result.ai_summary:
+                        print(f"\n{result.ai_summary}")
                     if result.ai_recommendation:
                         print(f"\nRecommendation: {result.ai_recommendation}")
                     if result.risk_factors:
@@ -115,10 +122,10 @@ async def run_command(args):
                         print(f"\nOpportunities:")
                         for opp in result.opportunities:
                             print(f"  - {opp}")
-            
-            except ValueError as e:
-                print(f"Error: {e}")
-                sys.exit(1)
+        
+        except ValueError as e:
+            print(f"Error: {e}")
+            sys.exit(1)
     
     elif args.command == "market":
         async with MuppinAnalyst(api_key=api_key or "dummy") as analyst:
@@ -135,8 +142,9 @@ async def run_command(args):
     elif args.command == "search":
         from .data_sources import DexScreenerAPI
         
-        async with DexScreenerAPI() as dex:
-            results = await dex.search_tokens(args.query)
+        api = DexScreenerAPI()
+        try:
+            results = await api.search_tokens(args.query)
             
             if not results:
                 print("No tokens found")
@@ -149,6 +157,8 @@ async def run_command(args):
                 print(f"    Contract: {base.get('address', 'N/A')}")
                 print(f"    Price: ${pair.get('priceUsd', 'N/A')}")
                 print()
+        finally:
+            await api.close()
 
 
 if __name__ == "__main__":

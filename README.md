@@ -26,20 +26,20 @@ MuppinLLM analyzes Solana tokens using:
 - 📊 **Technical Analysis**: RSI, MACD, Bollinger Bands, Moving Averages
 - 💎 **Fundamental Analysis**: Liquidity, Volume, Token Age, DEX Presence
 - 🎭 **Sentiment Analysis**: Social Media, Community Activity, Market Vibes
-- 🤖 **AI-Powered Insights**: GPT-5.2 powered market analysis
+- 🤖 **AI-Powered Insights**: OpenAI GPT-4o powered market analysis
 
 Get a clear **BULLISH** or **BEARISH** verdict with confidence scores!
 
 ## Installation
 
 ```bash
-pip install muppinllm
+pip install git+https://github.com/muppinai/muppinllm.git
 ```
 
 Or install from source:
 
 ```bash
-git clone https://github.com/muppin/muppinllm.git
+git clone https://github.com/muppinai/muppinllm.git
 cd muppinllm
 pip install -e .
 ```
@@ -53,8 +53,8 @@ import asyncio
 from muppinllm import MuppinAnalyst
 
 async def main():
-    # Initialize the analyst
-    analyst = MuppinAnalyst(api_key="your-emergent-llm-key")
+    # Initialize the analyst with your OpenAI API key
+    analyst = MuppinAnalyst(api_key="your-openai-api-key")
     
     # Analyze a Solana token by contract address
     result = await analyst.analyze("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN")
@@ -83,7 +83,7 @@ asyncio.run(main())
 
 ```bash
 # Set your API key
-export EMERGENT_LLM_KEY="your-api-key"
+export OPENAI_API_KEY="sk-your-openai-api-key"
 
 # Analyze a token
 muppinllm analyze JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN
@@ -93,6 +93,9 @@ muppinllm analyze JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN --json
 
 # Fast analysis without AI (just numerical analysis)
 muppinllm analyze JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN --no-ai
+
+# Use a different model
+muppinllm analyze JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN --model gpt-4-turbo
 
 # Get Solana market sentiment
 muppinllm market
@@ -149,9 +152,8 @@ MuppinLLM provides clear market verdicts:
 class MuppinAnalyst:
     def __init__(
         self,
-        api_key: str,                    # Emergent LLM API key
-        model: str = "gpt-5.2",          # LLM model
-        provider: str = "openai",        # LLM provider
+        api_key: str,                    # OpenAI API key
+        model: str = "gpt-4o",           # OpenAI model (gpt-4o, gpt-4-turbo, gpt-3.5-turbo)
         coingecko_api_key: str = None    # Optional CoinGecko Pro key
     )
     
@@ -203,8 +205,16 @@ MuppinLLM aggregates data from multiple sources:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `EMERGENT_LLM_KEY` | Emergent LLM API key for AI analysis | Yes |
+| `OPENAI_API_KEY` | OpenAI API key for AI analysis | Yes (for AI features) |
 | `COINGECKO_API_KEY` | CoinGecko Pro API key | No |
+
+## Getting an OpenAI API Key
+
+1. Go to [OpenAI Platform](https://platform.openai.com/)
+2. Sign up or log in to your account
+3. Navigate to API Keys section
+4. Create a new API key
+5. Set it as environment variable: `export OPENAI_API_KEY="sk-your-key"`
 
 ## Examples
 
@@ -252,6 +262,15 @@ with open("analysis.json", "w") as f:
     json.dump(data, f, indent=2)
 ```
 
+## Supported OpenAI Models
+
+| Model | Description | Cost |
+|-------|-------------|------|
+| `gpt-4o` | Latest GPT-4o (default, recommended) | $$ |
+| `gpt-4-turbo` | GPT-4 Turbo | $$ |
+| `gpt-4` | GPT-4 | $$$ |
+| `gpt-3.5-turbo` | GPT-3.5 (faster, cheaper) | $ |
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -265,11 +284,11 @@ MIT License - see [LICENSE](LICENSE) file.
 - 🌐 Website: [muppin.fun](https://muppin.fun)
 - 🐦 Twitter: [@MuppinTheBull](https://twitter.com/MuppinTheBull)
 - 💬 Telegram: [Muppin Community](https://t.me/muppin)
-- 📦 PyPI: [muppinllm](https://pypi.org/project/muppinllm/)
+- 📦 GitHub: [muppinai/muppinllm](https://github.com/muppinai/muppinllm)
 
 ---
 
 <p align="center">
   <strong>Muppin - The Mind of The Bull</strong><br>
-  <em>Powered by AI. Fueled by the Stampede.</em>
+  <em>Powered by OpenAI. Fueled by the Stampede.</em>
 </p>

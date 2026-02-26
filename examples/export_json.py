@@ -15,11 +15,11 @@ from muppinllm import MuppinAnalyst
 
 
 async def main():
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     
     if not api_key:
-        print("Error: Please set EMERGENT_LLM_KEY environment variable")
-        return
+        print("Warning: OPENAI_API_KEY not set. Running without AI analysis.")
+        api_key = "dummy"
     
     # Token to analyze
     token_address = "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
@@ -27,7 +27,9 @@ async def main():
     async with MuppinAnalyst(api_key=api_key) as analyst:
         print(f"Analyzing token: {token_address}")
         
-        result = await analyst.analyze(token_address)
+        # Run without AI if no API key
+        include_ai = api_key != "dummy"
+        result = await analyst.analyze(token_address, include_ai_analysis=include_ai)
         
         # Convert to dictionary
         data = result.to_dict()
@@ -35,7 +37,7 @@ async def main():
         # Add metadata
         data["metadata"] = {
             "analyzed_by": "MuppinLLM",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "timestamp": datetime.utcnow().isoformat(),
         }
         

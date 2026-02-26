@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "muppinllm"
-version = "1.0.0"
+version = "1.0.1"
 description = "AI-Powered Crypto Market Analyst for Solana Tokens - Bullish or Bearish Analysis"
 readme = "README.md"
 license = {text = "MIT"}
@@ -26,9 +26,9 @@ classifiers = [
     "Topic :: Office/Business :: Financial :: Investment",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-keywords = ["crypto", "solana", "ai", "llm", "market-analysis", "trading", "bullish", "bearish", "dex", "defi"]
+keywords = ["crypto", "solana", "ai", "llm", "openai", "market-analysis", "trading", "bullish", "bearish", "dex", "defi"]
 dependencies = [
-    "emergentintegrations>=0.1.0",
+    "openai>=1.0.0",
     "requests>=2.31.0",
     "pandas>=2.0.0",
     "numpy>=1.24.0",
@@ -46,9 +46,9 @@ dev = [
 
 [project.urls]
 Homepage = "https://muppin.fun"
-Repository = "https://github.com/muppin/muppinllm"
-Documentation = "https://github.com/muppin/muppinllm#readme"
-Issues = "https://github.com/muppin/muppinllm/issues"
+Repository = "https://github.com/muppinai/muppinllm"
+Documentation = "https://github.com/muppinai/muppinllm#readme"
+Issues = "https://github.com/muppinai/muppinllm/issues"
 
 [project.scripts]
 muppinllm = "muppinllm.cli:main"

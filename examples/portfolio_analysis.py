@@ -21,11 +21,11 @@ PORTFOLIO = {
 
 
 async def main():
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     
     if not api_key:
-        print("Error: Please set EMERGENT_LLM_KEY environment variable")
-        return
+        print("Warning: OPENAI_API_KEY not set. Running without AI analysis.")
+        api_key = "dummy"
     
     async with MuppinAnalyst(api_key=api_key) as analyst:
         print("=" * 60)

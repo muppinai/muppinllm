@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from openai import AsyncOpenAI
 
 from .models import (
     AnalysisResult,
@@ -33,7 +33,7 @@ class MuppinAnalyst:
     a token is BULLISH or BEARISH.
     
     Example:
-        >>> analyst = MuppinAnalyst(api_key="your-emergent-llm-key")
+        >>> analyst = MuppinAnalyst(api_key="your-openai-api-key")
         >>> result = await analyst.analyze("So11111111111111111111111111111111111111112")
         >>> print(result.verdict)  # BULLISH or BEARISH
         >>> print(result.strength)  # 1-100
@@ -70,30 +70,30 @@ Respond in JSON format with the following structure:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "gpt-5.2",
-        provider: str = "openai",
+        model: str = "gpt-4o",
         coingecko_api_key: Optional[str] = None,
     ):
         """
         Initialize MuppinLLM Analyst.
         
         Args:
-            api_key: Emergent LLM API key (or set EMERGENT_LLM_KEY env var)
-            model: LLM model to use (default: gpt-5.2)
-            provider: LLM provider (default: openai)
+            api_key: OpenAI API key (or set OPENAI_API_KEY env var)
+            model: OpenAI model to use (default: gpt-4o)
             coingecko_api_key: Optional CoinGecko Pro API key
         """
         load_dotenv()
         
-        self.api_key = api_key or os.environ.get("EMERGENT_LLM_KEY")
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "API key required. Set EMERGENT_LLM_KEY environment variable "
+                "OpenAI API key required. Set OPENAI_API_KEY environment variable "
                 "or pass api_key parameter."
             )
         
         self.model = model
-        self.provider = provider
+        
+        # Initialize OpenAI client
+        self.openai_client = AsyncOpenAI(api_key=self.api_key)
         
         # Initialize data sources
         self.dexscreener = DexScreenerAPI()
@@ -103,19 +103,6 @@ Respond in JSON format with the following structure:
         self.technical_analyzer = TechnicalAnalyzer()
         self.fundamental_analyzer = FundamentalAnalyzer()
         self.sentiment_analyzer = SentimentAnalyzer()
-        
-        # LLM Chat instance
-        self._chat: Optional[LlmChat] = None
-    
-    def _get_chat(self, session_id: str) -> LlmChat:
-        """Get or create LLM chat instance."""
-        chat = LlmChat(
-            api_key=self.api_key,
-            session_id=session_id,
-            system_message=self.SYSTEM_PROMPT
-        )
-        chat.with_model(self.provider, self.model)
-        return chat
     
     async def analyze(
         self,
@@ -298,10 +285,8 @@ Respond in JSON format with the following structure:
             return Verdict.NEUTRAL
     
     async def _get_ai_analysis(self, result: AnalysisResult) -> Dict[str, Any]:
-        """Get AI-powered analysis summary."""
+        """Get AI-powered analysis summary using OpenAI."""
         try:
-            chat = self._get_chat(f"muppin-{result.token.contract_address[:8]}")
-            
             # Prepare analysis data for LLM
             analysis_prompt = f"""Analyze this Solana token:
 
@@ -332,24 +317,26 @@ PRELIMINARY VERDICT: {result.verdict.value}
 
 Provide your Muppin analysis in JSON format."""
 
-            message = UserMessage(text=analysis_prompt)
-            response = await chat.send_message(message)
+            response = await self.openai_client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": analysis_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1000,
+                response_format={"type": "json_object"}
+            )
+            
+            response_text = response.choices[0].message.content
             
             # Parse JSON response
             import json
-            # Try to extract JSON from response
             try:
-                # Handle potential markdown code blocks
-                response_text = response.strip()
-                if "```json" in response_text:
-                    response_text = response_text.split("```json")[1].split("```")[0]
-                elif "```" in response_text:
-                    response_text = response_text.split("```")[1].split("```")[0]
-                
                 return json.loads(response_text)
             except json.JSONDecodeError:
                 return {
-                    "summary": response[:500] if response else "Analysis complete",
+                    "summary": response_text[:500] if response_text else "Analysis complete",
                     "recommendation": "Review the technical and fundamental data",
                     "risk_factors": [],
                     "opportunities": [],
