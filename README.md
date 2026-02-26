@@ -282,8 +282,6 @@ MIT License - see [LICENSE](LICENSE) file.
 ## Links
 
 - 🌐 Website: [muppin.fun](https://muppin.fun)
-- 🐦 Twitter: [@MuppinTheBull](https://twitter.com/MuppinTheBull)
-- 💬 Telegram: [Muppin Community](https://t.me/muppin)
 - 📦 GitHub: [muppinai/muppinllm](https://github.com/muppinai/muppinllm)
 
 ---
