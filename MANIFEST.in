@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include pytest.ini
+recursive-include muppinllm *.py
+recursive-include tests *.py
+recursive-include examples *.py
